@@ -1,21 +1,16 @@
-﻿// ray-tracing.cpp : このファイルには 'main' 関数が含まれています。プログラム実行の開始と終了がそこで行われます。
-//
-
-#include "pch.h"
-#include <iostream>
+﻿#include "output.h"
+#include "render.h"
+// #include "cpplinq/CppLinq/cpplinq.hpp"
 
 int main()
 {
-    std::cout << "Hello World!\n"; 
+	const int w = 800;
+	const int h = 480;
+	Ray cameraRay = Ray(V(), V(0, 0, 1));
+	std::vector<Sphere> spheres = { Sphere(V(0, 0, 150), 100, ColorPix(0, 0, 255), ColorPix(0, 0, 0)), Sphere(V(0, 200, 150), 100, ColorPix(0, 0, 255), ColorPix(255, 255, 255)) };
+	Screen screen = Screen(w, h, cameraRay, spheres);
+	render(screen);
+	output(&screen);
+	//    system("open result.ppm");
+	return 0;
 }
-
-// プログラムの実行: Ctrl + F5 または [デバッグ] > [デバッグなしで開始] メニュー
-// プログラムのデバッグ: F5 または [デバッグ] > [デバッグの開始] メニュー
-
-// 作業を開始するためのヒント: 
-//    1. ソリューション エクスプローラー ウィンドウを使用してファイルを追加/管理します 
-//   2. チーム エクスプローラー ウィンドウを使用してソース管理に接続します
-//   3. 出力ウィンドウを使用して、ビルド出力とその他のメッセージを表示します
-//   4. エラー一覧ウィンドウを使用してエラーを表示します
-//   5. [プロジェクト] > [新しい項目の追加] と移動して新しいコード ファイルを作成するか、[プロジェクト] > [既存の項目の追加] と移動して既存のコード ファイルをプロジェクトに追加します
-//   6. 後ほどこのプロジェクトを再び開く場合、[ファイル] > [開く] > [プロジェクト] と移動して .sln ファイルを選択します
