@@ -15,16 +15,12 @@ void render(Screen &getScreen) {
 		rays.push_back(Ray(getScreen.cameraRay.o, getScreen.cameraRay.d + V(x * 0.01, y * 0.01, 0)));
 	}
 	for (int i = 0; i < rays.size(); i++) {
-		//        std::cout << "Rendering:" << (float)i/rays.size()*100.0 << "%" << std::endl;
-		ColorPix calColor = ColorPix();
-		while (true) {
+		//        std::cout << "Rendering:" << (float)i/rays.size()*100.0 << "%" << std::endl
 			auto info = RayHit(getScreen, rays[i]);
-			if (!info) {
-				break;
+			if (info) {
+				double cal = Dot(info.value().position, info.value().hitObject.p) / Magnitude(info.value().position) / Magnitude(info.value().hitObject.p);
+				getScreen.colors[i] = getScreen.spheres[0].color * cal;
 			}
-		}
-		//            double cal = Dot(info.value().position, info.value().hitObject.p) / Magnitude(info.value().position) / Magnitude(info.value().hitObject.p);
-		//            getScreen.colors[i] = getScreen.spheres[0].color * cal;
 				// rays.push_back(Ray(Q1, Q1 - getScreen.spheres[s].p));
 	}
 }
