@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include <jpeglib.h>
+//#include <jpeglib.h>
 
 #include "output.h"
 
