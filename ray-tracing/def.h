@@ -87,4 +87,5 @@ struct HitInfo
 	Sphere hitObject;
 	V position;
 	V hitObjectNormal;
+	double dot;
 };

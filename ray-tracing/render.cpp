@@ -14,14 +14,21 @@ void render(Screen &getScreen) {
 
 		rays.push_back(Ray(getScreen.cameraRay.o, getScreen.cameraRay.d + V(x * 0.01, y * 0.01, 0)));
 	}
+	int parsentRenderringKeep = 0;
 	for (int i = 0; i < rays.size(); i++) {
-		//        std::cout << "Rendering:" << (float)i/rays.size()*100.0 << "%" << std::endl
+		double parsentRenderring = (double)i / (double)rays.size()*10.0;
+		std::cout << i << std::endl;
+		if (parsentRenderringKeep != (int)parsentRenderring) {
+			std::cout << parsentRenderring << std::endl;
+			//std::cout << "Rendering:" << (float)i / rays.size()*100.0 << "%" << std::endl;
+			parsentRenderringKeep = parsentRenderring;
+		}
 			auto info = RayHit(getScreen, rays[i]);
-			if (info) {
-				double cal = Dot(info.value().position, info.value().hitObject.p) / Magnitude(info.value().position) / Magnitude(info.value().hitObject.p);
-				getScreen.colors[i] = getScreen.spheres[0].color * cal;
+			if (info && info.value().dot > 0) {
+				//std::cout << info.value().dot << std::endl;
+				getScreen.colors[i] = getScreen.spheres[0].color * info.value().dot;
+				//rays.push_back(Ray(info.value().position, info.value().position - info.value().hitObject.p));
 			}
-				// rays.push_back(Ray(Q1, Q1 - getScreen.spheres[s].p));
 	}
 }
 
@@ -39,6 +46,7 @@ std::optional<HitInfo> RayHit(Screen &getScreen, Ray &getRay) {
 			hit.hitObject = getScreen.spheres[s];
 			hit.position = Q1;
 			hit.hitObjectNormal = Q1 - getScreen.spheres[s].p;
+			hit.dot = Dot(hit.position, hit.hitObject.p) / Magnitude(hit.position) / Magnitude(hit.hitObject.p);
 			return hit;
 		}
 		else {
