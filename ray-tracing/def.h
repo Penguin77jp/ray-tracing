@@ -16,8 +16,11 @@ struct V
 V operator+(V a, V b);
 V operator-(V a, V b);
 V operator*(double a, V b);
+V operator/(V a, double b);
 
 double Magnitude(V a);
+
+V Normalize(V);
 
 double Dot(V a, V b);
 
@@ -41,22 +44,11 @@ public:
 	ColorPix();
 	ColorPix(double r, double g, double b);
 	ColorPix(const ColorPix &color);
-	double Power() {
-		double max = 0;
-		if (R > max) {
-			max = R;
-		}
-		if (G > max) {
-			max = G;
-		}
-		if (B > max) {
-			max = B;
-		}
-		return max;
-	}
+	double Power();
 };
 
 ColorPix operator*(ColorPix color, double p);
+ColorPix operator*(double p,ColorPix color);
 
 struct Sphere
 {
@@ -84,8 +76,10 @@ public:
 
 struct HitInfo
 {
+	Ray ray;
 	Sphere hitObject;
 	V position;
 	V hitObjectNormal;
 	double dot;
+	ColorPix color;
 };

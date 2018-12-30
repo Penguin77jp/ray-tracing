@@ -32,7 +32,7 @@ void render(Screen &getScreen) {
 	}
 }
 
-std::optional<HitInfo> RayHit(Screen &getScreen, Ray &getRay) {
+std::optional<HitInfo> RayHit(Screen &getScreen, Ray &getRay,  double rayPower=1.0) {
 	for (int s = 0; s < getScreen.spheres.size(); s++) {
 
 		double dotA = Dot(getRay.d, getRay.d);
@@ -41,16 +41,34 @@ std::optional<HitInfo> RayHit(Screen &getScreen, Ray &getRay) {
 			std::pow(getScreen.spheres[s].r, 2);
 		V Q1 = getRay.o + ((dotB - std::pow(std::pow(dotB, 2) - (dotA * dotC), 0.5)) / dotA * getRay.d);
 		double root = std::pow(dotB, 2) - dotA * dotC;
+
+		//Ä‹A’†~
+		if (root < 0 || rayPower< 0.01) {
+			return std::nullopt;
+		}
+
 		if (root >= 0) {
 			HitInfo hit;
 			hit.hitObject = getScreen.spheres[s];
 			hit.position = Q1;
-			hit.hitObjectNormal = Q1 - getScreen.spheres[s].p;
+			hit.hitObjectNormal = Normalize(Q1 - getScreen.spheres[s].p);   
 			hit.dot = Dot(hit.position, hit.hitObject.p) / Magnitude(hit.position) / Magnitude(hit.hitObject.p);
+			//hit.ray = Ray(hit.position, Normalize(getRay.d) + hit.hitObjectNormal);
+			auto hitRecursive = RayHit(getScreen , Ray(hit.position, Normalize(getRay.d) + hit.hitObjectNormal),rayPower*hit.dot);
+			if (hitRecursive && hit.dot*hitRecursive.value().dot > 0.01) {
+				if (hit.hitObject.emission.Power() > 0) {
+					hit.color = hitRecursive.value().dot * hitRecursive.value().hitObject.emission;
+				}
+				else {
+					hit.color = hitRecursive.value().color * hit.dot;
+				}
+			}
+			else {
+				//F‚Ì‰e‹¿‚ª‚²‚­‚í‚¸‚©‚Å‚ ‚é
+				//‚ ‚é‚¢‚ÍAray‚ªÚG‚µ‚È‚©‚Á‚½
+				hit.color = ColorPix(0,0,0);
+			}
 			return hit;
-		}
-		else {
-			return std::nullopt;
 		}
 	}
 }
