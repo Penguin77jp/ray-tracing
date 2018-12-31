@@ -64,10 +64,11 @@ class Screen
 {
 public:
 	int w, h;
+	double pov;
 	std::vector<ColorPix> colors;
 	Ray cameraRay;
 	std::vector<Sphere> spheres;
-	Screen(int, int, const Ray &, std::vector<Sphere> &);
+	Screen(int, int,double, const Ray &, std::vector<Sphere> &);
 	int GetHigh(int);
 	// int GetHigh01(int);
 	int GetWidth(int);

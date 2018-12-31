@@ -1,10 +1,11 @@
 #include <vector>
 #include "def.h"
 
-Screen::Screen(int width, int high, const Ray &cam, std::vector<Sphere> &spheres)
+Screen::Screen(int width, int high, double pov, const Ray &cam, std::vector<Sphere> &spheres)
 {
 	w = width;
 	h = high;
+	this->pov = pov;
 	for (int i = 0; i < width * high; i++)
 	{
 		ColorPix a;

@@ -1,11 +1,13 @@
 #include <iostream>
 #include <fstream>
+#include <iostream>
 //#include <jpeglib.h>
 
 #include "output.h"
 
 void output(Screen *getScreen)
 {
+	std::cout << "Outputting..." << std::endl;
 	std::ofstream ofs("result.ppm");
 	ofs << "P3\n"
 		<< getScreen->w << " " << getScreen->h << "\n255\n";
