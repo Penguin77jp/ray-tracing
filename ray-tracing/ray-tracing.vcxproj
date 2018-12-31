@@ -154,6 +154,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="debug.cpp" />
     <ClCompile Include="def.cpp" />
     <ClCompile Include="output.cpp" />
     <ClCompile Include="ray-tracing.cpp" />
@@ -162,6 +163,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="debug.h" />
     <ClInclude Include="def.h" />
     <ClInclude Include="output.h" />
     <ClInclude Include="render.h" />

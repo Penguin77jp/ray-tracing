@@ -3,11 +3,13 @@
 #include <iostream>
 #include <optional>
 #include <time.h>
+
 #include "def.h"
 #include "render.h"
-
+#include "debug.h"
 
 void render(Screen &getScreen) {
+	LogColorful("Start redering", LogColor_enum::Error);
 	std::vector<Ray> rays;
 	for (int i = 0; i < getScreen.w * getScreen.h; i++) {
 		double x = getScreen.GetWidth(i) - getScreen.w * 0.5;
@@ -29,6 +31,11 @@ void render(Screen &getScreen) {
 }
 
 std::optional<HitInfo> RayHit(Screen &getScreen, const Ray &getRay,  double rayPower) {
+	//Ä‹A’†~
+	if (rayPower < 0.01) {
+		return std::nullopt;
+	}
+
 	for (int s = 0; s < getScreen.spheres.size(); s++) {
 		double dotA = Dot(getRay.d, getRay.d);
 		double dotB = Dot(getRay.d, getScreen.spheres[s].p - getRay.o);
@@ -37,12 +44,6 @@ std::optional<HitInfo> RayHit(Screen &getScreen, const Ray &getRay,  double rayP
 		V Q1_offsetBefo = (dotB - std::pow(std::pow(dotB, 2) - (dotA * dotC), 0.5)) / dotA * getRay.d;
 		V Q1 = getRay.o + Q1_offsetBefo;
 		double root = std::pow(dotB, 2) - dotA * dotC;
-
-		//Ä‹A’†~
-		if (rayPower< 0.01) {
-			return std::nullopt;
-		}
-
 		auto _isBackRay = Q1_offsetBefo / getRay.d;
 		if (root >= 0 && _isBackRay && _isBackRay.value() > 0) {
 			HitInfo hit;
@@ -68,7 +69,7 @@ std::optional<HitInfo> RayHit(Screen &getScreen, const Ray &getRay,  double rayP
 			else {
 				//F‚Ì‰e‹¿‚ª‚²‚­‚í‚¸‚©‚Å‚ ‚é
 				//‚ ‚é‚¢‚ÍAray‚ªÚG‚µ‚È‚©‚Á‚½
-				hit.color = ColorPix(0,255,0);
+				hit.color = ColorPix(0,0,0);
 			}
 			return hit;
 		}

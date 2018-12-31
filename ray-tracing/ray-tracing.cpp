@@ -1,5 +1,6 @@
 ﻿#include "output.h"
 #include "render.h"
+#include "debug.h"
 // #include "cpplinq/CppLinq/cpplinq.hpp"
 
 int main()
@@ -14,5 +15,6 @@ int main()
 	render(screen);
 	output(&screen);
 	//system("open result.ppm");
+	LogColorful("Finished!", LogColor_enum::ErrorHighLight);
 	return 0;
 }

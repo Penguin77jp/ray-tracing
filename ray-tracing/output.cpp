@@ -2,13 +2,15 @@
 #include <fstream>
 #include <iostream>
 #include <time.h>
+
 //#include <jpeglib.h>
 
 #include "output.h"
+#include "debug.h"
 
 void output(Screen *getScreen)
 {
-	std::cout << "Start outputting" << std::endl;
+	LogColorful("Start outputting",LogColor_enum::Error);
 	std::ofstream ofs("result.ppm");
 	ofs << "P3\n"
 		<< getScreen->w << " " << getScreen->h << "\n255\n";
