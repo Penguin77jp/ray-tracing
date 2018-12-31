@@ -17,18 +17,14 @@ void render(Screen &getScreen) {
 	}
 	int _clockKeep = clock()*0.001;//msc -> sc
 	for (int i = 0; i < rays.size(); i++) {
-		double _clock = clock();
-		if (_clockKeep != (int)(_clock*0.001)) {
+		if (_clockKeep != (int)(clock()*0.001)) {
 			std::cout << "Rendering:" << (float)i / rays.size()*100.0 << "%" << std::endl;
 			_clockKeep = clock()*0.001;
 		}
 		auto info = RayHit(getScreen, rays[i], 1.0);
-			if (info) {
-				getScreen.colors[i] = ColorPix(255,255,255);
-			}
-			//if (info && info.value().dot > 0) {
-				//getScreen.colors[i] = info.value().color;
-			//}
+		if (info) {
+			getScreen.colors[i] = info.value().color;
+		}
 	}
 }
 
@@ -38,28 +34,30 @@ std::optional<HitInfo> RayHit(Screen &getScreen, const Ray &getRay,  double rayP
 		double dotB = Dot(getRay.d, getScreen.spheres[s].p - getRay.o);
 		double dotC = Dot(getScreen.spheres[s].p - getRay.o, getScreen.spheres[s].p - getRay.o) -
 			std::pow(getScreen.spheres[s].r, 2);
-		V Q1 = getRay.o + ((dotB - std::pow(std::pow(dotB, 2) - (dotA * dotC), 0.5)) / dotA * getRay.d);
+		V Q1_offsetBefo = (dotB - std::pow(std::pow(dotB, 2) - (dotA * dotC), 0.5)) / dotA * getRay.d;
+		V Q1 = getRay.o + Q1_offsetBefo;
 		double root = std::pow(dotB, 2) - dotA * dotC;
 
 		//再帰中止
 		if (rayPower< 0.01) {
 			return std::nullopt;
 		}
-		//別のオブジェをチェック
-		if (root < 0) {
-			continue;
-		}
 
-		if (root >= 0) {
+		auto _isBackRay = Q1_offsetBefo / getRay.d;
+		if (root >= 0 && _isBackRay && _isBackRay.value() > 0) {
 			HitInfo hit;
-			return hit;
 			hit.hitObject = getScreen.spheres[s];
 			hit.position = Q1;
 			hit.hitObjectNormal = Normalize(Q1 - getScreen.spheres[s].p);   
 			hit.dot = Dot(hit.position, hit.hitObject.p) / Magnitude(hit.position) / Magnitude(hit.hitObject.p);
 			//hit.ray = Ray(hit.position, Normalize(getRay.d) + hit.hitObjectNormal);
+			//光源の場合、直ちに光を反映
+			if (hit.hitObject.emission.Power() > 0) {
+				hit.color = hit.dot* hit.hitObject.emission;
+				return hit;
+			}
 			auto hitRecursive = RayHit(getScreen , Ray(hit.position, Normalize(getRay.d) + hit.hitObjectNormal),rayPower*hit.dot);
-			if (hitRecursive && hit.dot*hitRecursive.value().dot > 0.01) {
+			if (hitRecursive) {
 				if (hitRecursive.value().hitObject.emission.Power() > 0) {
 					hit.color = hitRecursive.value().dot * hitRecursive.value().hitObject.emission;
 				}
@@ -70,7 +68,7 @@ std::optional<HitInfo> RayHit(Screen &getScreen, const Ray &getRay,  double rayP
 			else {
 				//色の影響がごくわずかである
 				//あるいは、rayが接触しなかった
-				hit.color = ColorPix(0,0,0);
+				hit.color = ColorPix(0,255,0);
 			}
 			return hit;
 		}

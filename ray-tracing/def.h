@@ -3,6 +3,7 @@
 #include <string>
 #include <cmath>
 #include <vector>
+#include <optional>
 
 struct V
 {
@@ -17,6 +18,7 @@ V operator+(V a, V b);
 V operator-(V a, V b);
 V operator*(double a, V b);
 V operator/(V a, double b);
+std::optional<double> operator/(V a, V b);
 
 double Magnitude(V a);
 

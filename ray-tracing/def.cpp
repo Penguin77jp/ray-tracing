@@ -1,4 +1,6 @@
 #include <vector>
+#include <float.h>
+#include <math.h>
 #include "def.h"
 
 Screen::Screen(int width, int high, double pov, const Ray &cam, std::vector<Sphere> &spheres)
@@ -44,6 +46,17 @@ V operator*(double a, V b)
 }
 V operator/(V a, double b) {
 	return V(a.x / b, a.y / b, a.z / b);
+}
+std::optional<double> operator/(V a, V b) {
+	double bai;
+	bai = a.x / b.x;
+	//«‚Í•‚“®¬””äŠr
+	if (fabs(a.y / b.y - bai)  < DBL_EPSILON && fabs(a.z / b.z - bai) < DBL_EPSILON) {
+		return bai;
+	}
+	else {
+		return std::nullopt;
+	}
 }
 
 double Magnitude(V a)
