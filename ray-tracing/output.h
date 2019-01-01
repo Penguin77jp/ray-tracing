@@ -2,4 +2,4 @@
 
 #include "def.h"
 
-void output(Screen *getScreen);
+void output(Screen &getScreen);

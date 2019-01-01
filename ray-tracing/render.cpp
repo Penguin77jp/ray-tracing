@@ -7,6 +7,7 @@
 #include "def.h"
 #include "render.h"
 #include "debug.h"
+#include "output.h"
 
 void render(Screen &getScreen) {
 	LogColorful("Start redering", LogColor_enum::Error);
@@ -15,7 +16,7 @@ void render(Screen &getScreen) {
 		double x = getScreen.GetWidth(i) - getScreen.w * 0.5;
 		double y = getScreen.GetHigh(i) - getScreen.h * 0.5;
 
-		rays.push_back(Ray(getScreen.cameraRay.o, getScreen.cameraRay.d + V(x * getScreen.pov, y * getScreen.pov, 0)));
+		rays.push_back(Ray(getScreen.cameraRay.o, getScreen.cameraRay.d + V(x * getScreen.pov, y * getScreen.pov, 0))); 
 	}
 	int _clockKeep = clock()*0.001;//msc -> sc
 	for (int i = 0; i < rays.size(); i++) {
@@ -25,7 +26,10 @@ void render(Screen &getScreen) {
 		}
 		auto info = RayHit(getScreen, rays[i], 1.0);
 		if (info) {
+			double x = getScreen.GetWidth(i) - getScreen.w * 0.5;
+			double y = getScreen.GetHigh(i) - getScreen.h * 0.5;
 			getScreen.colors[i] = info.value().color;
+			std::cout << x << "," << y << " : " << info.value().color.Power() << std::endl;
 		}
 	}
 }
