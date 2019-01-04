@@ -29,7 +29,7 @@ void render(Screen &getScreen) {
 			double x = getScreen.GetWidth(i) - getScreen.w * 0.5;
 			double y = getScreen.GetHigh(i) - getScreen.h * 0.5;
 			getScreen.colors[i] = info.value().color;
-			std::cout << x << "," << y << " : " << info.value().color.Power() << std::endl;
+			//std::cout << x << "," << y << " : " << info.value().color.Power() << std::endl;
 		}
 	}
 }
@@ -42,20 +42,19 @@ std::optional<HitInfo> RayHit(Screen &getScreen, const Ray &getRay,  double rayP
 
 	for (int s = 0; s < getScreen.spheres.size(); s++) {
 		double dotA = Dot(getRay.d, getRay.d);
-		double dotB = Dot(getRay.d, getScreen.spheres[s].p - getRay.o);
-		double dotC = Dot(getScreen.spheres[s].p - getRay.o, getScreen.spheres[s].p - getRay.o) -
-			std::pow(getScreen.spheres[s].r, 2);
-		V Q1_offsetBefo = (dotB - std::pow(std::pow(dotB, 2) - (dotA * dotC), 0.5)) / dotA * getRay.d;
-		V Q1 = getRay.o + Q1_offsetBefo;
-		double root = std::pow(dotB, 2) - dotA * dotC;
-		auto _isBackRay = Q1_offsetBefo / getRay.d;
-		if (root >= 0 && _isBackRay && _isBackRay.value() > 0) {
+		double dotB = -2 * Dot(getRay.d  ,getScreen.spheres[s].p - getRay.o);
+		double dotC = Dot(getScreen.spheres[s].p - getRay.o, getScreen.spheres[s].p - getRay.o) - std::pow(getScreen.spheres[s].r,2);
+		double D_4 = (std::pow(dotB, 2) - 4 * dotA*dotC) / 4;
+		double t1 = (-dotB / 2 + std::pow(D_4, 0.5)) / dotA;
+		double t2 = (-dotB / 2 - std::pow(D_4, 0.5)) / dotA;
+		if (t1 >= DBL_EPSILON) {
+			V Q1 = V(getRay.o + t1 * getRay.d);
 			HitInfo hit;
 			hit.hitObject = getScreen.spheres[s];
 			hit.position = Q1;
 			hit.hitObjectNormal = Normalize(Q1 - getScreen.spheres[s].p);   
 			hit.dot = Dot(hit.position, hit.hitObject.p) / Magnitude(hit.position) / Magnitude(hit.hitObject.p);
-			//hit.ray = Ray(hit.position, Normalize(getRay.d) + hit.hitObjectNormal);
+			hit.ray = Ray(hit.position, Normalize(getRay.d) + hit.hitObjectNormal);
 			//ŒõŒ¹‚Ìê‡A’¼‚¿‚ÉŒõ‚ğ”½‰f
 			if (hit.hitObject.emission.Power() > 0) {
 				hit.color = hit.dot* hit.hitObject.emission;
@@ -73,7 +72,7 @@ std::optional<HitInfo> RayHit(Screen &getScreen, const Ray &getRay,  double rayP
 			else {
 				//F‚Ì‰e‹¿‚ª‚²‚­‚í‚¸‚©‚Å‚ ‚é
 				//‚ ‚é‚¢‚ÍAray‚ªÚG‚µ‚È‚©‚Á‚½
-				hit.color = ColorPix(0,0,0);
+				hit.color = Color(0,0,0);
 			}
 			return hit;
 		}
