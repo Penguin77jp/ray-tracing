@@ -10,7 +10,7 @@ Screen::Screen(int width, int high, double pov, const Ray &cam, std::vector<Sphe
 	this->pov = pov;
 	for (int i = 0; i < width * high; i++)
 	{
-		ColorPix a;
+		Color a;
 		colors.push_back(a);
 	}
 	cameraRay = cam;
@@ -87,24 +87,24 @@ Ray::Ray(const Ray &ray)
 Ray::Ray(const V & org, const V & dir)
 	: o(org), d(dir) {}
 
-ColorPix::ColorPix()
+Color::Color()
 	: R(255), G(0), B(255) {}
 
-ColorPix::ColorPix(double r, double g, double b)
+Color::Color(double r, double g, double b)
 	: R(r), G(g), B(b) {}
 
-ColorPix::ColorPix(const ColorPix &color)
+Color::Color(const Color &color)
 	: R(color.R), G(color.G), B(color.B) {}
 
-ColorPix operator*(ColorPix color, double p)
+Color operator*(Color color, double p)
 {
-	return ColorPix(color.R * p, color.G * p, color.B * p);
+	return Color(color.R * p, color.G * p, color.B * p);
 }
-ColorPix operator*(double p, ColorPix color)
+Color operator*(double p, Color color)
 {
-	return ColorPix(color.R * p, color.G * p, color.B * p);
+	return Color(color.R * p, color.G * p, color.B * p);
 }
-double ColorPix::Power() {
+double Color::Power() {
 	double max = 0;
 	if (R > max) {
 		max = R;
@@ -118,7 +118,7 @@ double ColorPix::Power() {
 	return max;
 }
 
-Sphere::Sphere(V v, double rad, ColorPix col, ColorPix ems)
+Sphere::Sphere(V v, double rad, Color col, Color ems)
 	: p(v), r(rad), color(col), emission(ems) {}
 
 Sphere::Sphere()

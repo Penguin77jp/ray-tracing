@@ -37,28 +37,28 @@ struct Ray
 	Ray(const V& org, const V& dir);
 };
 
-class ColorPix
+class Color
 {
 public:
 	int R;
 	int G;
 	int B;
-	ColorPix();
-	ColorPix(double r, double g, double b);
-	ColorPix(const ColorPix &color);
+	Color();
+	Color(double r, double g, double b);
+	Color(const Color &color);
 	double Power();
 };
 
-ColorPix operator*(ColorPix color, double p);
-ColorPix operator*(double p,ColorPix color);
+Color operator*(Color color, double p);
+Color operator*(double p,Color color);
 
 struct Sphere
 {
 	V p;
 	double r;
-	ColorPix color;
-	ColorPix emission;
-	Sphere(V v, double rad, ColorPix col, ColorPix ems);
+	Color color;
+	Color emission;
+	Sphere(V v, double rad, Color col, Color ems);
 	Sphere();
 };
 
@@ -67,7 +67,7 @@ class Screen
 public:
 	int w, h;
 	double pov;
-	std::vector<ColorPix> colors;
+	std::vector<Color> colors;
 	Ray cameraRay;
 	std::vector<Sphere> spheres;
 	Screen(int, int,double, const Ray &, std::vector<Sphere> &);
@@ -84,5 +84,5 @@ struct HitInfo
 	V position;
 	V hitObjectNormal;
 	double dot;
-	ColorPix color;
+	Color color;
 };
