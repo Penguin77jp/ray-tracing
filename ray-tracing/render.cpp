@@ -26,10 +26,7 @@ void render(Screen &getScreen) {
 		}
 		auto info = RayHit(getScreen, rays[i], 1.0);
 		if (info) {
-			double x = getScreen.GetWidth(i) - getScreen.w * 0.5;
-			double y = getScreen.GetHigh(i) - getScreen.h * 0.5;
 			getScreen.colors[i] = info.value().color;
-			//std::cout << x << "," << y << " : " << info.value().color.Power() << std::endl;
 		}
 	}
 }
