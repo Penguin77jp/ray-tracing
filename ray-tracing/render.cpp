@@ -11,7 +11,7 @@
 #include "debug.h"
 #include "output.h"
 
-#define _DEGREE_DETAIL 0.1
+#define _DEGREE_DETAIL 0.01
 
 void render(Screen &getScreen) {
 	LogColorful("Start redering", LogColor_enum::Error);
@@ -28,16 +28,16 @@ void render(Screen &getScreen) {
 			std::cout << "Rendering:" << (float)i / rays.size()*100.0 << "%" << std::endl;
 			_clockKeep = clock()*0.001;
 		}
-		auto info = RayHit(getScreen, rays[i], 1.0);
+		auto info = RayHit(getScreen, rays[i], 1.0,0);
 		if (info) {
 			getScreen.colors[i] = info.value().color;
 		}
 	}
 }
 
-std::optional<HitInfo> RayHit(Screen &getScreen, const Ray &getRay, double rayPower) {
+std::optional<HitInfo> RayHit(Screen &getScreen, const Ray &getRay, double rayPower,int depth) {
 	//çƒãAíÜé~
-	if (rayPower < 0.01) {
+	if (rayPower < 0.01 || depth >= 64) {
 		return std::nullopt;
 	}
 
@@ -71,8 +71,8 @@ std::optional<HitInfo> RayHit(Screen &getScreen, const Ray &getRay, double rayPo
 						hit.color = hit.dot* hit.hitObject.emission;
 						return hit;
 					}
-					std::cout << V2string(Normalize(getRay.d + diffusionRay_direction)) << std::endl;
-					auto hitRecursive = RayHit(getScreen, Ray(hit.position, Normalize(getRay.d+diffusionRay_direction)), rayPower*hit.dot);
+					//std::cout << V2string(Normalize(getRay.d + diffusionRay_direction)) << std::endl;
+					auto hitRecursive = RayHit(getScreen, Ray(hit.position, Normalize(getRay.d+diffusionRay_direction)), rayPower*hit.dot,depth+1);
 					if (hitRecursive) {
 						if (hitRecursive.value().hitObject.emission.Power() > 0) {
 							hit.color = hitRecursive.value().dot * hitRecursive.value().hitObject.emission;

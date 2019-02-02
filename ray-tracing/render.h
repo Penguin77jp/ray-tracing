@@ -3,6 +3,6 @@
 
 #include "def.h"
 
-std::optional<HitInfo> RayHit(Screen &, const Ray &,  double);
+std::optional<HitInfo> RayHit(Screen &, const Ray &,  double,int);
 
 void render(Screen &);
