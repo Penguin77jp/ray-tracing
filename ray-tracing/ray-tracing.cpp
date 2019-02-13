@@ -5,8 +5,8 @@
 
 int main()
 {
-	const int w = 1920 * 0.75;
-	const int h = 1080 * 0.75;
+	const int w = 1920 * 0.5;
+	const int h = 1080 * 0.5;
 	const double pov = 0.01;
 	Ray cameraRay = Ray(V(), V(0, 0, 1));
 	/*std::vector<Sphere> spheres = {
@@ -21,7 +21,8 @@ int main()
 	Sphere(V(77, 16.5, 78),16.5,       Color(),      Color(0.99, 0.99, 0.99)), //ガラス
 	Sphere(V(50.0, 90.0, 81.6),15.0,   Color(36,36,36), Color()), //照明
 	};*/
-	std::vector<Sphere> spheres = { Sphere(V(0, 0, 150), 100, Color(0, 0, 255), Color(0, 0, 0)), Sphere(V(0, -300, 150), 100, Color(0, 0, 255), Color(255, 255, 255)) };
+	std::vector<Sphere> spheres = { Sphere(V(0, 0, 150), 100, Color(0, 0, 255), Color(0, 0, 0)), Sphere(V(0, -300, 150), 100, Color(0, 0, 255), Color(255, 255, 255)) ,Sphere(V(300, 0, 150), 100, Color(0, 0, 255), Color(0, 255, 0)),
+	Sphere(V(500, -300, 150), 100, Color(0, 0, 255), Color(0, 0, 0)) };
 	Screen screen = Screen(w, h,pov, cameraRay, spheres);
 	render(screen);
 	output(screen);

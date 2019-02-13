@@ -28,6 +28,10 @@ void render(Screen &getScreen) {
 			std::cout << "Rendering:" << (float)i / rays.size()*100.0 << "%" << std::endl;
 			_clockKeep = clock()*0.001;
 		}
+		//if (i % 100000 == 0) {
+			//output(getScreen);
+			//std::cout << "done" << std::endl;
+		//}
 		auto info = RayHit(getScreen, rays[i], 1.0,0);
 		if (info) {
 			getScreen.colors[i] = info.value().color;
@@ -37,7 +41,7 @@ void render(Screen &getScreen) {
 
 std::optional<HitInfo> RayHit(Screen &getScreen, const Ray &getRay, double rayPower,int depth) {
 	//çƒãAíÜé~
-	if (rayPower < 0.01 || depth >= 64) {
+	if (rayPower < 0.01 || depth >= 36) {
 		return std::nullopt;
 	}
 
@@ -48,6 +52,7 @@ std::optional<HitInfo> RayHit(Screen &getScreen, const Ray &getRay, double rayPo
 		double D_4 = (std::pow(dotB, 2) - 4 * dotA*dotC) / 4;
 		double t1 = (-dotB / 2 + std::pow(D_4, 0.5)) / dotA;
 		double t2 = (-dotB / 2 - std::pow(D_4, 0.5)) / dotA;
+		auto vector_rayHit = std::vector<HitInfo>();
 		if (t1 >= DBL_EPSILON) {
 			for (double deg1 = 0; deg1 <= 2 * M_PI; deg1 += _DEGREE_DETAIL) {
 				for (double deg2 = -M_PI; deg2 <= M_PI ; deg2 += _DEGREE_DETAIL) {
