@@ -18,7 +18,7 @@ void render(Screen &getScreen) {
 	std::vector<Ray> rays;
 	for (int i = 0; i < getScreen.w * getScreen.h; i++) {
 		double x = getScreen.GetWidth(i) - getScreen.w * 0.5;
-		double y = getScreen.GetHigh(i) - getScreen.h * 0.5;
+		double y =- getScreen.GetHigh(i) + getScreen.h * 0.5;
 
 		rays.push_back(Ray(getScreen.cameraRay.o, getScreen.cameraRay.d + V(x * getScreen.pov, y * getScreen.pov, 0)));
 	}
