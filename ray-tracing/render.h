@@ -3,6 +3,6 @@
 
 #include "def.h"
 
-Color RayHit(Screen &, const Ray &,  double,int);
+Color RayHit(Screen &, const Ray &,int);
 
 void render(Screen &);

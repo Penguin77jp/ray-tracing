@@ -11,7 +11,7 @@
 #include "debug.h"
 #include "output.h"
 
-#define _DEGREE_DETAIL 0.01
+#define _DEGREE_DETAIL 1.0
 
 void render(Screen &getScreen) {
 	LogColorful("Start redering", LogColor_enum::Error);
@@ -23,26 +23,23 @@ void render(Screen &getScreen) {
 		rays.push_back(Ray(getScreen.cameraRay.o, getScreen.cameraRay.d + V(x * getScreen.pov, y * getScreen.pov, 0)));
 	}
 	int _clockKeep = clock()*0.001;//msc -> sc
-	for (int i = 0; i < rays.size(); i++) {
+	for (int i = 0; i < rays.size()*0.5; i++) {
 		if (_clockKeep != (int)(clock()*0.001)) {
 			std::cout << "Rendering:" << (float)i / rays.size()*100.0 << "%" << std::endl;
 			_clockKeep = clock()*0.001;
 		}
-		//if (i % 100000 == 0) {
-			//output(getScreen);
-			//std::cout << "done" << std::endl;
-		//}
-		auto info = RayHit(getScreen, rays[i], 1.0,0);
+		auto info = RayHit(getScreen, rays[i],0);
 		getScreen.colors[i] = info;
 	}
 }
 
-Color RayHit(Screen &getScreen, const Ray &getRay, double rayPower,int depth) {
+Color RayHit(Screen &getScreen, const Ray &getRay,int depth) {
 	//再帰中止
-	if (rayPower < 0.01 || depth >= 36) {
+	if ( depth >= 5) {
 		return Color(0,0,0);
 	}
 
+		auto color = Color(0,0,0);
 	for (int s = 0; s < getScreen.spheres.size(); s++) {
 		double dotA = Dot(getRay.d, getRay.d);
 		double dotB = -2 * Dot(getRay.d, getScreen.spheres[s].p - getRay.o);
@@ -50,7 +47,6 @@ Color RayHit(Screen &getScreen, const Ray &getRay, double rayPower,int depth) {
 		double D_4 = (std::pow(dotB, 2) - 4 * dotA*dotC) / 4;
 		double t1 = (-dotB / 2 + std::pow(D_4, 0.5)) / dotA;
 		double t2 = (-dotB / 2 - std::pow(D_4, 0.5)) / dotA;
-		auto color = Color();
 		if (t1 >= DBL_EPSILON) {
 			for (double deg1 = 0; deg1 <= 2 * M_PI; deg1 += _DEGREE_DETAIL) {
 				for (double deg2 = -M_PI; deg2 <= M_PI ; deg2 += _DEGREE_DETAIL) {
@@ -69,23 +65,10 @@ Color RayHit(Screen &getScreen, const Ray &getRay, double rayPower,int depth) {
 					if (dot < 0) {
 						continue;
 					}
-					//光源の場合、直ちに光を反映
-					if (hit.hitObject.emission.Power() > 0) {
-						hit.color = hit.dot* hit.hitObject.emission;
-						return hit;
-					}
-					
-					}
-					else {
-						//色の影響がごくわずかである
-						//あるいは、rayが接触しなかった
-						hit.color = Color(0, 0, 0);
-					}
-					return hit;
+					color += hit.hitObject.color* RayHit(getScreen, Ray(hit.position, Normalize(getRay.d + diffusionRay_direction)), depth + 1)+hit.hitObject.emission;
 				}
 			}
 		}
 	}
-	//結果衝突を検出出来なかった
-	return std::nullopt;
+	return color;
 }

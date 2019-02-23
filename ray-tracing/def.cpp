@@ -96,6 +96,13 @@ Color::Color(double r, double g, double b)
 Color::Color(const Color &color)
 	: R(color.R), G(color.G), B(color.B) {}
 
+Color Color::operator+=(Color a) {
+	return Color(this->R+a.R,this->G+a.G,this->B+a.B);
+}
+Color operator+ (Color a, Color b) {
+	return Color(a.R + b.R, a.G+ b.G, a.B + b.B);
+}
+
 Color operator*(Color color, double p)
 {
 	return Color(color.R * p, color.G * p, color.B * p);
@@ -103,6 +110,9 @@ Color operator*(Color color, double p)
 Color operator*(double p, Color color)
 {
 	return Color(color.R * p, color.G * p, color.B * p);
+}
+Color operator*(Color a, Color b) {
+	return Color(a.R*b.R, a.G*b.G, a.B*b.B);
 }
 double Color::Power() {
 	double max = 0;

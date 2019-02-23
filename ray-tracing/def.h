@@ -47,11 +47,12 @@ public:
 	Color(double r, double g, double b);
 	Color(const Color &color);
 	double Power();
+	Color operator+=(Color);
 };
-
-Color operator*(Color color, double p);
-Color operator*(double p,Color color);
-
+	Color operator+(Color, Color);
+	Color operator*(Color, double);
+	Color operator*(double ,Color );
+	Color operator*(Color, Color);
 struct Sphere
 {
 	V p;
