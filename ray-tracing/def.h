@@ -47,7 +47,7 @@ public:
 	Color(double r, double g, double b);
 	Color(const Color &color);
 	double Power();
-	Color operator+=(Color);
+	void operator+=(Color);
 };
 	Color operator+(Color, Color);
 	Color operator*(Color, double);

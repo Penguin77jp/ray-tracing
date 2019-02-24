@@ -96,8 +96,14 @@ Color::Color(double r, double g, double b)
 Color::Color(const Color &color)
 	: R(color.R), G(color.G), B(color.B) {}
 
-Color Color::operator+=(Color a) {
-	return Color(this->R+a.R,this->G+a.G,this->B+a.B);
+void Color::operator+=(Color a) {
+	//auto temp =  Color(this->R+a.R,this->G+a.G,this->B+a.B);
+	//if (temp.Power() > 0) {
+	//	temp = temp;
+	//}
+	this->R += a.R;
+	this->G += a.G;
+	this->B += a.B;
 }
 Color operator+ (Color a, Color b) {
 	return Color(a.R + b.R, a.G+ b.G, a.B + b.B);
