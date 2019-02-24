@@ -1,7 +1,6 @@
 ﻿#include "output.h"
 #include "render.h"
 #include "debug.h"
-// #include "cpplinq/CppLinq/cpplinq.hpp"
 
 int main()
 {

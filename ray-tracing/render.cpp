@@ -23,7 +23,7 @@ void render(Screen &getScreen) {
 		rays.push_back(Ray(getScreen.cameraRay.o, getScreen.cameraRay.d + V(x * getScreen.pov, y * getScreen.pov, 0)));
 	}
 	int _clockKeep = clock()*0.001;//msc -> sc
-	for (int i = 0; i < rays.size()*0.5; i++) {
+	for (int i = 0; i < rays.size(); i++) {
 		if (_clockKeep != (int)(clock()*0.001)) {
 			std::cout << "Rendering:" << (float)i / rays.size()*100.0 << "%" << std::endl;
 			_clockKeep = clock()*0.001;
@@ -35,7 +35,7 @@ void render(Screen &getScreen) {
 
 Color RayHit(Screen &getScreen, const Ray &getRay,int depth) {
 	//再帰中止
-	if ( depth >= 5) {
+	if ( depth >= 2) {
 		return Color(0,0,0);
 	}
 
@@ -48,26 +48,27 @@ Color RayHit(Screen &getScreen, const Ray &getRay,int depth) {
 		double t1 = (-dotB / 2 + std::pow(D_4, 0.5)) / dotA;
 		double t2 = (-dotB / 2 - std::pow(D_4, 0.5)) / dotA;
 		if (t1 >= DBL_EPSILON) {
+			V Q1 = V(getRay.o + t1 * getRay.d);
+			HitInfo hit;
+			hit.hitObject = getScreen.spheres[s];
+			hit.position = Q1;
+			hit.hitObjectNormal = Normalize(Q1 - getScreen.spheres[s].p);
+			hit.dot = Dot(hit.position, hit.hitObject.p) / Magnitude(hit.position) / Magnitude(hit.hitObject.p);
+			hit.ray = Ray(hit.position, Normalize(getRay.d) + hit.hitObjectNormal);
 			for (double deg1 = 0; deg1 <= 2 * M_PI; deg1 += _DEGREE_DETAIL) {
 				for (double deg2 = -M_PI; deg2 <= M_PI ; deg2 += _DEGREE_DETAIL) {
 			//for (double deg1 = 0; deg1 <= 2 * M_PI; deg1 += _DEGREE_DETAIL) {
 				//for (double deg2 = deg1 == 0 ? -M_PI : M_PI + _DEGREE_DETAIL; deg2 <= deg1 == 0 ? M_PI : M_PI - _DEGREE_DETAIL; deg2 += _DEGREE_DETAIL) {
-					V Q1 = V(getRay.o + t1 * getRay.d);
-					HitInfo hit;
-					hit.hitObject = getScreen.spheres[s];
-					hit.position = Q1;
-					hit.hitObjectNormal = Normalize(Q1 - getScreen.spheres[s].p);
-					hit.dot = Dot(hit.position, hit.hitObject.p) / Magnitude(hit.position) / Magnitude(hit.hitObject.p);
-					hit.ray = Ray(hit.position, Normalize(getRay.d) + hit.hitObjectNormal);
 					V diffusionRay_direction = Normalize(V(std::cos(deg1)*std::sin(deg2), std::sin(deg1)*std::sin(deg2), std::cos(deg2)));
 					auto dot = Dot(hit.hitObjectNormal,diffusionRay_direction);
 					//貫通レイはなし(後々、ガラスで使う)
 					if (dot < 0) {
 						continue;
 					}
-					color += hit.hitObject.color* RayHit(getScreen, Ray(hit.position, Normalize(getRay.d + diffusionRay_direction)), depth + 1)+hit.hitObject.emission;
+					color += hit.hitObject.color* RayHit(getScreen, Ray(hit.position, Normalize(getRay.d + diffusionRay_direction)), depth + 1)*dot;
 				}
 			}
+			color += hit.hitObject.emission;
 		}
 	}
 	return color;
