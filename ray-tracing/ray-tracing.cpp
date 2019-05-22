@@ -1,13 +1,16 @@
 ﻿#include "output.h"
 #include "render.h"
 #include "debug.h"
+#include <Windows.h>
+#include <tchar.h>
+#include <string>
 // #include "cpplinq/CppLinq/cpplinq.hpp"
 
 int main()
 {
 	const int w = 1920 * 0.5;
 	const int h = 1080 * 0.5;
-	const double pov = 0.01;
+	const double cameraDistance = 0.1;
 	Ray cameraRay = Ray(V(), V(0, 0, 1));
 	/*std::vector<Sphere> spheres = {
 	Sphere( V(1e5 + 1, 40.8, 81.6),1e5, Color(),      Color(0.75, 0.25, 0.25)), // 左
@@ -23,10 +26,11 @@ int main()
 	};*/
 	std::vector<Sphere> spheres = { Sphere(V(0, 0, 150), 100, Color(0, 0, 255), Color(0, 0, 0)), Sphere(V(0, -300, 150), 100, Color(0, 0, 255), Color(255, 255, 255)) ,Sphere(V(300, 0, 150), 100, Color(0, 0, 255), Color(0, 255, 0)),
 	Sphere(V(500, -300, 150), 100, Color(0, 0, 255), Color(0, 0, 0)) };
-	Screen screen = Screen(w, h,pov, cameraRay, spheres);
+	Screen screen = Screen(w, h,cameraDistance, cameraRay, spheres);
 	render(screen);
 	output(screen);
 	//system("open result.ppm");
 	LogColorful("Finished!", LogColor_enum::ErrorHighLight);
+	ShellExecute(NULL, NULL, L"explorer.exe", L"/select", NULL, SW_SHOWNORMAL);
 	return 0;
 }

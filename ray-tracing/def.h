@@ -5,28 +5,30 @@
 #include <vector>
 #include <optional>
 
-struct V
+class V
 {
+public:
 	double x;
 	double y;
 	double z;
 	V();
 	V(double x, double y, double z);
+	V operator+(V a);
+	V operator+(V a) const;
+	V operator-(V a);
+	V operator*(double a);
+	V operator*(double a) const;
+	V operator/(double a);
+	V operator/(double a) const;
+	double Magnitude();
+	V Normalize();
+	std::string V2string();
 };
 
-V operator+(V a, V b);
-V operator-(V a, V b);
-V operator*(double a, V b);
-V operator/(V a, double b);
 std::optional<double> operator/(V a, V b);
-
-double Magnitude(V a);
-
-V Normalize(V);
 
 double Dot(V a, V b);
 
-std::string V2string(V a);
 
 struct Ray
 {
@@ -66,9 +68,9 @@ class Screen
 {
 public:
 	int w, h;
-	double pov;
 	std::vector<Color> colors;
 	Ray cameraRay;
+	double cameraDistance;
 	std::vector<Sphere> spheres;
 	Screen(int, int,double, const Ray &, std::vector<Sphere> &);
 	int GetHigh(int);

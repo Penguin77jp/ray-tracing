@@ -3,11 +3,11 @@
 #include <math.h>
 #include "def.h"
 
-Screen::Screen(int width, int high, double pov, const Ray &cam, std::vector<Sphere> &spheres)
+Screen::Screen(int width, int high, double cameraDistance, const Ray &cam, std::vector<Sphere> &spheres)
 {
 	w = width;
 	h = high;
-	this->pov = pov;
+	this->cameraDistance = cameraDistance;
 	for (int i = 0; i < width * high; i++)
 	{
 		Color a;
@@ -32,20 +32,35 @@ V::V() :
 V::V(double x, double y, double z) :
 	x(x), y(y), z(z) {}
 
-V operator+(V a, V b)
+V V::operator+(V a)
 {
-	return V(a.x + b.x, a.y + b.y, a.z + b.z);
+	return V(this->x + a.x, this->y + a.y, this->z + a.z);
 }
-V operator-(V a, V b)
+
+V V::operator+(V a) const
 {
-	return V(a.x - b.x, a.y - b.y, a.z - b.z);
+	return V(this->x + a.x, this->y + a.y, this->z + a.z);
 }
-V operator*(double a, V b)
+
+
+
+V V::operator-(V a)
 {
-	return V(a * b.x, a * b.y, a * b.z);
+	return V(this->x - a.x, this->y - a.y, this->z - a.z);
 }
-V operator/(V a, double b) {
-	return V(a.x / b, a.y / b, a.z / b);
+V V::operator*(double a)
+{
+	return V(a * this->x, a * this->y, a * this->z);
+}
+V V::operator*(double a) const
+{
+	return V(a * this->x, a * this->y, a * this->z);
+}
+V V::operator/(double a) {
+	return V(this->x / a, this->y / a, this->z / a);
+}
+V V::operator/(double a) const{
+	return V(this->x / a, this->y / a, this->z / a);
 }
 std::optional<double> operator/(V a, V b) {
 	double bai;
@@ -59,13 +74,13 @@ std::optional<double> operator/(V a, V b) {
 	}
 }
 
-double Magnitude(V a)
+double V::Magnitude()
 {
-	return pow(pow(a.x, 2) + pow(a.y, 2) + pow(a.z, 2), 0.5);
+	return pow(pow(this->x, 2) + pow(this->y, 2) + pow(this->z, 2), 0.5);
 }
 
-V Normalize(V a) {
-	return a / Magnitude(a);
+V V::Normalize() {
+	return V(this->x / this->Magnitude(),this->y / this->Magnitude(), this->z / this->Magnitude());
 }
 
 double Dot(V a, V b)
@@ -73,9 +88,9 @@ double Dot(V a, V b)
 	return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-std::string V2string(V a)
+std::string V::V2string()
 {
-	return "(" + std::to_string(a.x) + "," + std::to_string(a.y) + "," + std::to_string(a.z) + ")";
+	return "(" + std::to_string(this->x) + "," + std::to_string(this->y) + "," + std::to_string(this->z) + ")";
 }
 
 Ray::Ray()
