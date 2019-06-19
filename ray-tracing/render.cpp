@@ -1,7 +1,6 @@
 #include <vector>
 #include <cmath>
 #define _USE_MATH_DEFINES
-#include <math.h>
 #include <iostream>
 #include <optional>
 #include <time.h>
@@ -13,14 +12,21 @@
 
 #define _DEGREE_DETAIL 0.01
 
-void render(Screen& getScreen) {
+void render(Screen & getScreen) {
 	LogColorful("Start redering", LogColor_enum::Error);
 	std::vector<Ray> rays;
 	for (int i = 0; i < getScreen.w * getScreen.h; i++) {
-		double x = getScreen.GetWidth(i) - getScreen.w * 0.5;
-		double y = -getScreen.GetHigh(i) + getScreen.h * 0.5;
+		auto px = ((1 + 2.0 * getScreen.GetWidth(i)) / (2.0 * getScreen.w) - 0.5);
+		const V x_normalized = Cross(getScreen.cameraRay_foward, getScreen.cameraRay_up).Normalize();
+		const V x = x_normalized * ((1 + 2.0 * getScreen.GetWidth(i)) / (2.0 * getScreen.w) - 0.5) * getScreen.w;
+		//LogColorful("test", LogColor_enum::Warning);
+		auto py = (-(1 + 2.0 * getScreen.GetHigh(i)) / (2.0 * getScreen.h) + 0.5);
+		const V y_normalized = Cross(x_normalized, getScreen.cameraRay_foward).Normalize();
+		const V y = y_normalized * (-(1 + 2.0 * getScreen.GetHigh(i)) / (2.0 * getScreen.h) + 0.5) * getScreen.h;
+		//double x = getScreen.GetWidth(i) - getScreen.w * 0.5;
+		//double y = -getScreen.GetHigh(i) + getScreen.h * 0.5;
 
-		rays.push_back(Ray(getScreen.cameraRay.o, getScreen.cameraRay.d + V(x , y, 0)));
+		rays.push_back(Ray(getScreen.cameraRay_center, getScreen.cameraRay_center * getScreen.cameraDistance + x + y));
 	}
 	int _clockKeep = clock() * 0.001;//msc -> sc
 	for (int i = 0; i < rays.size(); i++) {
@@ -39,23 +45,24 @@ void render(Screen& getScreen) {
 	}
 }
 
-std::optional<HitInfo> RayHit(Screen & getScreen, const Ray & getRay, double rayPower, int depth) {
+std::optional<HitInfo> RayHit(Screen& getScreen, const Ray& getRay, double rayPower, int depth) {
 	//çƒãAíÜé~
 	if (rayPower < 0.01 || depth >= 36) {
 		return std::nullopt;
 	}
 
 	for (int s = 0; s < getScreen.spheres.size(); s++) {
-		double dotA = Dot(getRay.d, getRay.d);
-		double dotB = -2 * Dot(getRay.d, getScreen.spheres[s].p - getRay.o);
-		double dotC = Dot(getScreen.spheres[s].p - getRay.o, getScreen.spheres[s].p - getRay.o) - std::pow(getScreen.spheres[s].r, 2);
-		double D_4 = (std::pow(dotB, 2) - 4 * dotA * dotC) / 4;
-		double t1 = (-dotB / 2 + std::pow(D_4, 0.5)) / dotA;
-		double t2 = (-dotB / 2 - std::pow(D_4, 0.5)) / dotA;
-		auto vector_rayHit = std::vector<HitInfo>();
-		if (t1 >= DBL_EPSILON) {
-			for (double deg1 = 0; deg1 <= 2 * M_PI; deg1 += _DEGREE_DETAIL) {
-				for (double deg2 = -M_PI; deg2 <= M_PI; deg2 += _DEGREE_DETAIL) {
+		const double dotA = Dot(getRay.d, getRay.d);
+		const double dotB = -2 * Dot(getRay.d, getScreen.spheres[s].p - getRay.o);
+		const double dotC = Dot(getScreen.spheres[s].p - getRay.o, getScreen.spheres[s].p - getRay.o) - std::pow(getScreen.spheres[s].r, 2);
+		const double D_4 = (std::pow(dotB, 2) - 4 * dotA * dotC) / 4;
+		const double t1 = (-dotB / 2 + std::pow(D_4, 0.5)) / dotA;
+		const double t2 = (-dotB / 2 - std::pow(D_4, 0.5)) / dotA;
+		const auto vector_rayHit = std::vector<HitInfo>();
+		if (fabs(t1) >= DBL_EPSILON) {
+			const double m_pi = 3.1415;
+			for (double deg1 = 0; deg1 <= 2 * m_pi; deg1 += _DEGREE_DETAIL) {
+				for (double deg2 = -m_pi; deg2 <= m_pi; deg2 += _DEGREE_DETAIL) {
 					//for (double deg1 = 0; deg1 <= 2 * M_PI; deg1 += _DEGREE_DETAIL) {
 						//for (double deg2 = deg1 == 0 ? -M_PI : M_PI + _DEGREE_DETAIL; deg2 <= deg1 == 0 ? M_PI : M_PI - _DEGREE_DETAIL; deg2 += _DEGREE_DETAIL) {
 					V Q1 = V(getRay.o + getRay.d * t1);

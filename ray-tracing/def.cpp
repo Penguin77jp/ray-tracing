@@ -1,9 +1,7 @@
-#include <vector>
-#include <float.h>
-#include <math.h>
+#include <cmath>
 #include "def.h"
 
-Screen::Screen(int width, int high, double cameraDistance, const Ray &cam, std::vector<Sphere> &spheres)
+Screen::Screen(int width, int high, double cameraDistance,const V& cam_center, const V &cam_foward, const V &cam_up, std::vector<Sphere> &spheres)
 {
 	w = width;
 	h = high;
@@ -13,7 +11,9 @@ Screen::Screen(int width, int high, double cameraDistance, const Ray &cam, std::
 		Color a;
 		colors.push_back(a);
 	}
-	cameraRay = cam;
+	cameraRay_center = cam_center;
+	cameraRay_foward = cam_foward.Normalize();
+	cameraRay_up = cam_up.Normalize();
 	this->spheres = spheres;
 }
 
@@ -21,9 +21,17 @@ int Screen::GetHigh(int index)
 {
 	return index / w;
 }
+double Screen::GetHigh01(int index)
+{
+	return (double)index / w / h;
+}
 int Screen::GetWidth(int index)
 {
 	return index % w;
+}
+double Screen::GetWidth01(int index)
+{
+	return (double)(index % w) / w;
 }
 
 V::V() :
@@ -31,33 +39,17 @@ V::V() :
 
 V::V(double x, double y, double z) :
 	x(x), y(y), z(z) {}
-
-V V::operator+(V a)
-{
-	return V(this->x + a.x, this->y + a.y, this->z + a.z);
-}
-
 V V::operator+(V a) const
 {
 	return V(this->x + a.x, this->y + a.y, this->z + a.z);
 }
-
-
-
-V V::operator-(V a)
+V V::operator-(V a) const
 {
 	return V(this->x - a.x, this->y - a.y, this->z - a.z);
-}
-V V::operator*(double a)
-{
-	return V(a * this->x, a * this->y, a * this->z);
 }
 V V::operator*(double a) const
 {
 	return V(a * this->x, a * this->y, a * this->z);
-}
-V V::operator/(double a) {
-	return V(this->x / a, this->y / a, this->z / a);
 }
 V V::operator/(double a) const{
 	return V(this->x / a, this->y / a, this->z / a);
@@ -73,22 +65,23 @@ std::optional<double> operator/(V a, V b) {
 		return std::nullopt;
 	}
 }
-
-double V::Magnitude()
-{
+double V::Magnitude() const{
 	return pow(pow(this->x, 2) + pow(this->y, 2) + pow(this->z, 2), 0.5);
 }
 
-V V::Normalize() {
+V V::Normalize() const{
 	return V(this->x / this->Magnitude(),this->y / this->Magnitude(), this->z / this->Magnitude());
 }
 
-double Dot(V a, V b)
+double Dot(const V &a,const V &b)
 {
 	return a.x * b.x + a.y * b.y + a.z * b.z;
 }
+V Cross(const V &a, const V &b) {
+	return  V(a.y*b.z-a.z*b.y, a.z*b.x-a.x*b.z, a.x*b.y-a.y*b.x);
+}
 
-std::string V::V2string()
+std::string V::V2string() const
 {
 	return "(" + std::to_string(this->x) + "," + std::to_string(this->y) + "," + std::to_string(this->z) + ")";
 }
@@ -105,7 +98,7 @@ Ray::Ray(const V & org, const V & dir)
 Color::Color()
 	: R(255), G(0), B(255) {}
 
-Color::Color(double r, double g, double b)
+Color::Color(int r, int g, int b)
 	: R(r), G(g), B(b) {}
 
 Color::Color(const Color &color)
